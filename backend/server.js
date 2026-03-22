@@ -43,6 +43,6 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.listen(PORT, () => {
-	console.log(`Server is running on port ${PORT}`);
+	console.log(`Sunucu çalışıyor, port: ${PORT}`);
 	connectMongoDB();
 });

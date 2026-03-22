@@ -31,7 +31,7 @@ const Post = ({ post }) => {
 				const data = await res.json();
 
 				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
+					throw new Error(data.error || "Bir şeyler yanlış gitti");
 				}
 				return data;
 			} catch (error) {
@@ -39,7 +39,7 @@ const Post = ({ post }) => {
 			}
 		},
 		onSuccess: () => {
-			toast.success("Post deleted successfully");
+			toast.success("Gönderi silindi");
 			queryClient.invalidateQueries({ queryKey: ["posts"] });
 		},
 	});
@@ -52,7 +52,7 @@ const Post = ({ post }) => {
 				});
 				const data = await res.json();
 				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
+					throw new Error(data.error || "Bir şeyler yanlış gitti");
 				}
 				return data;
 			} catch (error) {
@@ -91,7 +91,7 @@ const Post = ({ post }) => {
 				const data = await res.json();
 
 				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
+					throw new Error(data.error || "Bir şeyler yanlış gitti");
 				}
 				return data;
 			} catch (error) {
@@ -99,7 +99,7 @@ const Post = ({ post }) => {
 			}
 		},
 		onSuccess: () => {
-			toast.success("Comment posted successfully");
+			toast.success("Yorum gönderildi");
 			setComment("");
 			queryClient.invalidateQueries({ queryKey: ["posts"] });
 		},
@@ -125,18 +125,18 @@ const Post = ({ post }) => {
 
 	return (
 		<>
-			<div className='flex gap-2 items-start p-4 border-b border-gray-700'>
-				<div className='avatar'>
-					<Link to={`/profile/${postOwner.username}`} className='w-8 rounded-full overflow-hidden'>
+			<div className='flex gap-2 items-start px-3 py-2.5 sm:px-4 border-b border-gray-700/90'>
+				<div className='avatar shrink-0'>
+					<Link to={`/profile/${postOwner.username}`} className='w-8 rounded-full overflow-hidden block'>
 						<img src={postOwner.profileImg || "/avatar-placeholder.png"} />
 					</Link>
 				</div>
 				<div className='flex flex-col flex-1'>
 					<div className='flex gap-2 items-center'>
-						<Link to={`/profile/${postOwner.username}`} className='font-bold'>
+						<Link to={`/profile/${postOwner.username}`} className='font-semibold text-sm'>
 							{postOwner.fullName}
 						</Link>
-						<span className='text-gray-700 flex gap-1 text-sm'>
+						<span className='text-gray-600 flex gap-1 text-xs'>
 							<Link to={`/profile/${postOwner.username}`}>@{postOwner.username}</Link>
 							<span>·</span>
 							<span>{formattedDate}</span>
@@ -151,18 +151,18 @@ const Post = ({ post }) => {
 							</span>
 						)}
 					</div>
-					<div className='flex flex-col gap-3 overflow-hidden'>
-						<span>{post.text}</span>
+					<div className='flex flex-col gap-2 overflow-hidden text-sm text-zinc-200'>
+						<span className='whitespace-pre-wrap break-words'>{post.text}</span>
 						{post.img && (
 							<img
 								src={post.img}
-								className='h-80 object-contain rounded-lg border border-gray-700'
+								className='max-h-64 w-full object-contain rounded-md border border-gray-700/80'
 								alt=''
 							/>
 						)}
 					</div>
-					<div className='flex justify-between mt-3'>
-						<div className='flex gap-4 items-center w-2/3 justify-between'>
+					<div className='flex justify-between mt-2'>
+						<div className='flex gap-3 sm:gap-4 items-center w-2/3 justify-between max-w-md'>
 							<div
 								className='flex gap-1 items-center cursor-pointer group'
 								onClick={() => document.getElementById("comments_modal" + post._id).showModal()}
@@ -174,12 +174,12 @@ const Post = ({ post }) => {
 							</div>
 							{/* We're using Modal Component from DaisyUI */}
 							<dialog id={`comments_modal${post._id}`} className='modal border-none outline-none'>
-								<div className='modal-box rounded border border-gray-600'>
-									<h3 className='font-bold text-lg mb-4'>COMMENTS</h3>
+								<div className='modal-box rounded-lg border border-gray-600 p-4 max-w-md'>
+									<h3 className='font-semibold text-base mb-3'>Yorumlar</h3>
 									<div className='flex flex-col gap-3 max-h-60 overflow-auto'>
 										{post.comments.length === 0 && (
 											<p className='text-sm text-slate-500'>
-												No comments yet 🤔 Be the first one 😉
+												Henüz yorum yok 🤔 İlk siz yazın 😉
 											</p>
 										)}
 										{post.comments.map((comment) => (
@@ -204,26 +204,27 @@ const Post = ({ post }) => {
 										))}
 									</div>
 									<form
-										className='flex gap-2 items-center mt-4 border-t border-gray-600 pt-2'
+										className='flex flex-col sm:flex-row gap-2 items-stretch sm:items-end mt-3 border-t border-gray-600 pt-3'
 										onSubmit={handlePostComment}
 									>
 										<textarea
-											className='textarea w-full p-1 rounded text-md resize-none border focus:outline-none  border-gray-800'
-											placeholder='Add a comment...'
+											className='w-full min-h-[3rem] p-2 rounded-md text-sm resize-y border border-gray-700 bg-zinc-900/50 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-sky-500/50'
+											placeholder='Yorum ekle...'
 											value={comment}
 											onChange={(e) => setComment(e.target.value)}
+											rows={2}
 										/>
-										<button className='btn btn-primary rounded-full btn-sm text-white px-4'>
-											{isCommenting ? <LoadingSpinner size='md' /> : "Post"}
+										<button type='submit' className='btn-web-primary shrink-0 self-end sm:self-auto'>
+											{isCommenting ? <LoadingSpinner size='sm' /> : "Gönder"}
 										</button>
 									</form>
 								</div>
 								<form method='dialog' className='modal-backdrop'>
-									<button className='outline-none'>close</button>
+									<button className='outline-none'>kapat</button>
 								</form>
 							</dialog>
 							<div className='flex gap-1 items-center group cursor-pointer'>
-								<BiRepost className='w-6 h-6  text-slate-500 group-hover:text-green-500' />
+								<BiRepost className='w-4 h-4 text-slate-500 group-hover:text-green-500' />
 								<span className='text-sm text-slate-500 group-hover:text-green-500'>0</span>
 							</div>
 							<div className='flex gap-1 items-center group cursor-pointer' onClick={handleLikePost}>

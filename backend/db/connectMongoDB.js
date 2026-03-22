@@ -11,9 +11,12 @@ const connectMongoDB = async () => {
 			uri = memoryServer.getUri();
 		}
 		const conn = await mongoose.connect(uri);
-		console.log(`MongoDB connected: ${conn.connection.host}`);
+		console.log(`MongoDB bağlandı: ${conn.connection.host}`);
+
+		const { ensureAdminUser } = await import("../seed/ensureAdminUser.js");
+		await ensureAdminUser();
 	} catch (error) {
-		console.error(`Error connection to mongoDB: ${error.message}`);
+		console.error(`MongoDB bağlantı hatası: ${error.message}`);
 		process.exit(1);
 	}
 };

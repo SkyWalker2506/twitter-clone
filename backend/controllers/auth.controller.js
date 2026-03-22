@@ -8,21 +8,21 @@ export const signup = async (req, res) => {
 
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		if (!emailRegex.test(email)) {
-			return res.status(400).json({ error: "Invalid email format" });
+			return res.status(400).json({ error: "Geçersiz e-posta formatı" });
 		}
 
 		const existingUser = await User.findOne({ username });
 		if (existingUser) {
-			return res.status(400).json({ error: "Username is already taken" });
+			return res.status(400).json({ error: "Bu kullanıcı adı alınmış" });
 		}
 
 		const existingEmail = await User.findOne({ email });
 		if (existingEmail) {
-			return res.status(400).json({ error: "Email is already taken" });
+			return res.status(400).json({ error: "Bu e-posta zaten kayıtlı" });
 		}
 
 		if (password.length < 6) {
-			return res.status(400).json({ error: "Password must be at least 6 characters long" });
+			return res.status(400).json({ error: "Şifre en az 6 karakter olmalı" });
 		}
 
 		const salt = await bcrypt.genSalt(10);
@@ -50,11 +50,11 @@ export const signup = async (req, res) => {
 				coverImg: newUser.coverImg,
 			});
 		} else {
-			res.status(400).json({ error: "Invalid user data" });
+			res.status(400).json({ error: "Geçersiz kullanıcı bilgisi" });
 		}
 	} catch (error) {
 		console.log("Error in signup controller", error.message);
-		res.status(500).json({ error: "Internal Server Error" });
+		res.status(500).json({ error: "Sunucu hatası" });
 	}
 };
 
@@ -65,7 +65,7 @@ export const login = async (req, res) => {
 		const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
 
 		if (!user || !isPasswordCorrect) {
-			return res.status(400).json({ error: "Invalid username or password" });
+			return res.status(400).json({ error: "Kullanıcı adı veya şifre hatalı" });
 		}
 
 		generateTokenAndSetCookie(user._id, res);
@@ -82,17 +82,17 @@ export const login = async (req, res) => {
 		});
 	} catch (error) {
 		console.log("Error in login controller", error.message);
-		res.status(500).json({ error: "Internal Server Error" });
+		res.status(500).json({ error: "Sunucu hatası" });
 	}
 };
 
 export const logout = async (req, res) => {
 	try {
 		res.cookie("jwt", "", { maxAge: 0 });
-		res.status(200).json({ message: "Logged out successfully" });
+		res.status(200).json({ message: "Çıkış yapıldı" });
 	} catch (error) {
 		console.log("Error in logout controller", error.message);
-		res.status(500).json({ error: "Internal Server Error" });
+		res.status(500).json({ error: "Sunucu hatası" });
 	}
 };
 
@@ -102,6 +102,6 @@ export const getMe = async (req, res) => {
 		res.status(200).json(user);
 	} catch (error) {
 		console.log("Error in getMe controller", error.message);
-		res.status(500).json({ error: "Internal Server Error" });
+		res.status(500).json({ error: "Sunucu hatası" });
 	}
 };

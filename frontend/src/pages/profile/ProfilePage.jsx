@@ -42,7 +42,7 @@ const ProfilePage = () => {
 				const res = await fetch(`/api/users/profile/${username}`);
 				const data = await res.json();
 				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
+					throw new Error(data.error || data.message || "Bir şeyler yanlış gitti");
 				}
 				return data;
 			} catch (error) {
@@ -75,28 +75,28 @@ const ProfilePage = () => {
 
 	return (
 		<>
-			<div className='flex-[4_4_0]  border-r border-gray-700 min-h-screen '>
+			<div className='flex-[4_4_0] min-w-0 border-r border-gray-700 min-h-screen'>
 				{/* HEADER */}
 				{(isLoading || isRefetching) && <ProfileHeaderSkeleton />}
-				{!isLoading && !isRefetching && !user && <p className='text-center text-lg mt-4'>User not found</p>}
+				{!isLoading && !isRefetching && !user && <p className='text-center text-lg mt-4'>Kullanıcı bulunamadı</p>}
 				<div className='flex flex-col'>
 					{!isLoading && !isRefetching && user && (
 						<>
-							<div className='flex gap-10 px-4 py-2 items-center'>
+							<div className='flex gap-6 px-3 py-1.5 sm:px-4 items-center'>
 								<Link to='/'>
-									<FaArrowLeft className='w-4 h-4' />
+									<FaArrowLeft className='w-3.5 h-3.5' />
 								</Link>
-								<div className='flex flex-col'>
-									<p className='font-bold text-lg'>{user?.fullName}</p>
-									<span className='text-sm text-slate-500'>{POSTS?.length} posts</span>
+								<div className='flex flex-col min-w-0'>
+									<p className='font-semibold text-base truncate'>{user?.fullName}</p>
+									<span className='text-xs text-slate-500'>{POSTS?.length} gönderi</span>
 								</div>
 							</div>
 							{/* COVER IMG */}
 							<div className='relative group/cover'>
 								<img
 									src={coverImg || user?.coverImg || "/cover.png"}
-									className='h-52 w-full object-cover'
-									alt='cover image'
+									className='h-36 sm:h-40 w-full object-cover'
+									alt='kapak görseli'
 								/>
 								{isMyProfile && (
 									<div
@@ -122,8 +122,8 @@ const ProfilePage = () => {
 									onChange={(e) => handleImgChange(e, "profileImg")}
 								/>
 								{/* USER AVATAR */}
-								<div className='avatar absolute -bottom-16 left-4'>
-									<div className='w-32 rounded-full relative group/avatar'>
+								<div className='avatar absolute -bottom-12 left-3 sm:left-4'>
+									<div className='w-24 rounded-full relative group/avatar ring-2 ring-black'>
 										<img src={profileImg || user?.profileImg || "/avatar-placeholder.png"} />
 										<div className='absolute top-5 right-3 p-1 bg-primary rounded-full group-hover/avatar:opacity-100 opacity-0 cursor-pointer'>
 											{isMyProfile && (
@@ -136,35 +136,37 @@ const ProfilePage = () => {
 									</div>
 								</div>
 							</div>
-							<div className='flex justify-end px-4 mt-5'>
+							<div className='flex justify-end flex-wrap gap-2 px-3 sm:px-4 mt-3'>
 								{isMyProfile && <EditProfileModal authUser={authUser} />}
 								{!isMyProfile && (
 									<button
-										className='btn btn-outline rounded-full btn-sm'
+										type='button'
+										className={amIFollowing ? "btn-web-outline" : "btn-web-light"}
 										onClick={() => follow(user?._id)}
 									>
-										{isPending && "Loading..."}
-										{!isPending && amIFollowing && "Unfollow"}
-										{!isPending && !amIFollowing && "Follow"}
+										{isPending && "…"}
+										{!isPending && amIFollowing && "Takipten çık"}
+										{!isPending && !amIFollowing && "Takip et"}
 									</button>
 								)}
 								{(coverImg || profileImg) && (
 									<button
-										className='btn btn-primary rounded-full btn-sm text-white px-4 ml-2'
+										type='button'
+										className='btn-web-primary'
 										onClick={async () => {
 											await updateProfile({ coverImg, profileImg });
 											setProfileImg(null);
 											setCoverImg(null);
 										}}
 									>
-										{isUpdatingProfile ? "Updating..." : "Update"}
+										{isUpdatingProfile ? "Güncelleniyor..." : "Güncelle"}
 									</button>
 								)}
 							</div>
 
-							<div className='flex flex-col gap-4 mt-14 px-4'>
+							<div className='flex flex-col gap-3 mt-11 sm:mt-12 px-3 sm:px-4'>
 								<div className='flex flex-col'>
-									<span className='font-bold text-lg'>{user?.fullName}</span>
+									<span className='font-semibold text-base'>{user?.fullName}</span>
 									<span className='text-sm text-slate-500'>@{user?.username}</span>
 									<span className='text-sm my-1'>{user?.bio}</span>
 								</div>
@@ -194,31 +196,31 @@ const ProfilePage = () => {
 								<div className='flex gap-2'>
 									<div className='flex gap-1 items-center'>
 										<span className='font-bold text-xs'>{user?.following.length}</span>
-										<span className='text-slate-500 text-xs'>Following</span>
+										<span className='text-slate-500 text-xs'>Takip</span>
 									</div>
 									<div className='flex gap-1 items-center'>
 										<span className='font-bold text-xs'>{user?.followers.length}</span>
-										<span className='text-slate-500 text-xs'>Followers</span>
+										<span className='text-slate-500 text-xs'>Takipçi</span>
 									</div>
 								</div>
 							</div>
-							<div className='flex w-full border-b border-gray-700 mt-4'>
+							<div className='flex w-full border-b border-gray-700 mt-3 text-sm'>
 								<div
-									className='flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 relative cursor-pointer'
+									className='flex justify-center flex-1 py-2.5 px-2 hover:bg-secondary/80 transition duration-300 relative cursor-pointer font-medium text-zinc-300'
 									onClick={() => setFeedType("posts")}
 								>
-									Posts
+									Gönderiler
 									{feedType === "posts" && (
-										<div className='absolute bottom-0 w-10 h-1 rounded-full bg-primary' />
+										<div className='absolute bottom-0 w-9 h-0.5 rounded-full bg-primary' />
 									)}
 								</div>
 								<div
-									className='flex justify-center flex-1 p-3 text-slate-500 hover:bg-secondary transition duration-300 relative cursor-pointer'
+									className='flex justify-center flex-1 py-2.5 px-2 text-slate-500 hover:bg-secondary/80 transition duration-300 relative cursor-pointer font-medium'
 									onClick={() => setFeedType("likes")}
 								>
-									Likes
+									Beğeniler
 									{feedType === "likes" && (
-										<div className='absolute bottom-0 w-10  h-1 rounded-full bg-primary' />
+										<div className='absolute bottom-0 w-9 h-0.5 rounded-full bg-primary' />
 									)}
 								</div>
 							</div>

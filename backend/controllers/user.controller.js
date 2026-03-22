@@ -10,7 +10,7 @@ export const getUserProfile = async (req, res) => {
 
 	try {
 		const user = await User.findOne({ username }).select("-password");
-		if (!user) return res.status(404).json({ message: "User not found" });
+		if (!user) return res.status(404).json({ message: "Kullanıcı bulunamadı" });
 
 		res.status(200).json(user);
 	} catch (error) {
@@ -26,10 +26,10 @@ export const followUnfollowUser = async (req, res) => {
 		const currentUser = await User.findById(req.user._id);
 
 		if (id === req.user._id.toString()) {
-			return res.status(400).json({ error: "You can't follow/unfollow yourself" });
+			return res.status(400).json({ error: "Kendinizi takip edemezsiniz" });
 		}
 
-		if (!userToModify || !currentUser) return res.status(400).json({ error: "User not found" });
+		if (!userToModify || !currentUser) return res.status(400).json({ error: "Kullanıcı bulunamadı" });
 
 		const isFollowing = currentUser.following.includes(id);
 
@@ -38,7 +38,7 @@ export const followUnfollowUser = async (req, res) => {
 			await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });
 			await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
 
-			res.status(200).json({ message: "User unfollowed successfully" });
+			res.status(200).json({ message: "Takipten çıkıldı" });
 		} else {
 			// Follow the user
 			await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });
@@ -52,7 +52,7 @@ export const followUnfollowUser = async (req, res) => {
 
 			await newNotification.save();
 
-			res.status(200).json({ message: "User followed successfully" });
+			res.status(200).json({ message: "Takip edildi" });
 		}
 	} catch (error) {
 		console.log("Error in followUnfollowUser: ", error.message);
@@ -96,17 +96,17 @@ export const updateUser = async (req, res) => {
 
 	try {
 		let user = await User.findById(userId);
-		if (!user) return res.status(404).json({ message: "User not found" });
+		if (!user) return res.status(404).json({ message: "Kullanıcı bulunamadı" });
 
 		if ((!newPassword && currentPassword) || (!currentPassword && newPassword)) {
-			return res.status(400).json({ error: "Please provide both current password and new password" });
+			return res.status(400).json({ error: "Mevcut ve yeni şifreyi birlikte girin" });
 		}
 
 		if (currentPassword && newPassword) {
 			const isMatch = await bcrypt.compare(currentPassword, user.password);
-			if (!isMatch) return res.status(400).json({ error: "Current password is incorrect" });
+			if (!isMatch) return res.status(400).json({ error: "Mevcut şifre yanlış" });
 			if (newPassword.length < 6) {
-				return res.status(400).json({ error: "Password must be at least 6 characters long" });
+				return res.status(400).json({ error: "Şifre en az 6 karakter olmalı" });
 			}
 
 			const salt = await bcrypt.genSalt(10);

@@ -16,7 +16,7 @@ const NotificationPage = () => {
 			try {
 				const res = await fetch("/api/notifications");
 				const data = await res.json();
-				if (!res.ok) throw new Error(data.error || "Something went wrong");
+				if (!res.ok) throw new Error(data.error || "Bir şeyler yanlış gitti");
 				return data;
 			} catch (error) {
 				throw new Error(error);
@@ -32,14 +32,14 @@ const NotificationPage = () => {
 				});
 				const data = await res.json();
 
-				if (!res.ok) throw new Error(data.error || "Something went wrong");
+				if (!res.ok) throw new Error(data.error || "Bir şeyler yanlış gitti");
 				return data;
 			} catch (error) {
 				throw new Error(error);
 			}
 		},
 		onSuccess: () => {
-			toast.success("Notifications deleted successfully");
+			toast.success("Bildirimler silindi");
 			queryClient.invalidateQueries({ queryKey: ["notifications"] });
 		},
 		onError: (error) => {
@@ -49,9 +49,9 @@ const NotificationPage = () => {
 
 	return (
 		<>
-			<div className='flex-[4_4_0] border-l border-r border-gray-700 min-h-screen'>
-				<div className='flex justify-between items-center p-4 border-b border-gray-700'>
-					<p className='font-bold'>Notifications</p>
+			<div className='flex-[4_4_0] min-w-0 border-l border-r border-gray-700 min-h-screen'>
+				<div className='flex justify-between items-center px-3 py-2.5 border-b border-gray-700'>
+					<p className='font-semibold text-sm'>Bildirimler</p>
 					<div className='dropdown '>
 						<div tabIndex={0} role='button' className='m-1'>
 							<IoSettingsOutline className='w-4' />
@@ -61,7 +61,7 @@ const NotificationPage = () => {
 							className='dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52'
 						>
 							<li>
-								<a onClick={deleteNotifications}>Delete all notifications</a>
+								<a onClick={deleteNotifications}>Tüm bildirimleri sil</a>
 							</li>
 						</ul>
 					</div>
@@ -71,7 +71,7 @@ const NotificationPage = () => {
 						<LoadingSpinner size='lg' />
 					</div>
 				)}
-				{notifications?.length === 0 && <div className='text-center p-4 font-bold'>No notifications 🤔</div>}
+				{notifications?.length === 0 && <div className='text-center p-4 font-bold'>Bildirim yok 🤔</div>}
 				{notifications?.map((notification) => (
 					<div className='border-b border-gray-700' key={notification._id}>
 						<div className='flex gap-2 p-4'>
@@ -85,7 +85,7 @@ const NotificationPage = () => {
 								</div>
 								<div className='flex gap-1'>
 									<span className='font-bold'>@{notification.from.username}</span>{" "}
-									{notification.type === "follow" ? "followed you" : "liked your post"}
+									{notification.type === "follow" ? "sizi takip etti" : "gönderinizi beğendi"}
 								</div>
 							</Link>
 						</div>

@@ -10,10 +10,10 @@ export const createPost = async (req, res) => {
 		const userId = req.user._id.toString();
 
 		const user = await User.findById(userId);
-		if (!user) return res.status(404).json({ message: "User not found" });
+		if (!user) return res.status(404).json({ message: "Kullanıcı bulunamadı" });
 
 		if (!text && !img) {
-			return res.status(400).json({ error: "Post must have text or image" });
+			return res.status(400).json({ error: "Gönderide metin veya görsel olmalı" });
 		}
 
 		if (img) {
@@ -30,7 +30,7 @@ export const createPost = async (req, res) => {
 		await newPost.save();
 		res.status(201).json(newPost);
 	} catch (error) {
-		res.status(500).json({ error: "Internal server error" });
+		res.status(500).json({ error: "Sunucu hatası" });
 		console.log("Error in createPost controller: ", error);
 	}
 };
@@ -39,11 +39,11 @@ export const deletePost = async (req, res) => {
 	try {
 		const post = await Post.findById(req.params.id);
 		if (!post) {
-			return res.status(404).json({ error: "Post not found" });
+			return res.status(404).json({ error: "Gönderi bulunamadı" });
 		}
 
 		if (post.user.toString() !== req.user._id.toString()) {
-			return res.status(401).json({ error: "You are not authorized to delete this post" });
+			return res.status(401).json({ error: "Bu gönderiyi silme yetkiniz yok" });
 		}
 
 		if (post.img) {
@@ -53,10 +53,10 @@ export const deletePost = async (req, res) => {
 
 		await Post.findByIdAndDelete(req.params.id);
 
-		res.status(200).json({ message: "Post deleted successfully" });
+		res.status(200).json({ message: "Gönderi silindi" });
 	} catch (error) {
 		console.log("Error in deletePost controller: ", error);
-		res.status(500).json({ error: "Internal server error" });
+		res.status(500).json({ error: "Sunucu hatası" });
 	}
 };
 
@@ -67,12 +67,12 @@ export const commentOnPost = async (req, res) => {
 		const userId = req.user._id;
 
 		if (!text) {
-			return res.status(400).json({ error: "Text field is required" });
+			return res.status(400).json({ error: "Yorum metni gerekli" });
 		}
 		const post = await Post.findById(postId);
 
 		if (!post) {
-			return res.status(404).json({ error: "Post not found" });
+			return res.status(404).json({ error: "Gönderi bulunamadı" });
 		}
 
 		const comment = { user: userId, text };
@@ -83,7 +83,7 @@ export const commentOnPost = async (req, res) => {
 		res.status(200).json(post);
 	} catch (error) {
 		console.log("Error in commentOnPost controller: ", error);
-		res.status(500).json({ error: "Internal server error" });
+		res.status(500).json({ error: "Sunucu hatası" });
 	}
 };
 
@@ -95,7 +95,7 @@ export const likeUnlikePost = async (req, res) => {
 		const post = await Post.findById(postId);
 
 		if (!post) {
-			return res.status(404).json({ error: "Post not found" });
+			return res.status(404).json({ error: "Gönderi bulunamadı" });
 		}
 
 		const userLikedPost = post.likes.includes(userId);
@@ -125,7 +125,7 @@ export const likeUnlikePost = async (req, res) => {
 		}
 	} catch (error) {
 		console.log("Error in likeUnlikePost controller: ", error);
-		res.status(500).json({ error: "Internal server error" });
+		res.status(500).json({ error: "Sunucu hatası" });
 	}
 };
 
@@ -149,7 +149,7 @@ export const getAllPosts = async (req, res) => {
 		res.status(200).json(posts);
 	} catch (error) {
 		console.log("Error in getAllPosts controller: ", error);
-		res.status(500).json({ error: "Internal server error" });
+		res.status(500).json({ error: "Sunucu hatası" });
 	}
 };
 
@@ -158,7 +158,7 @@ export const getLikedPosts = async (req, res) => {
 
 	try {
 		const user = await User.findById(userId);
-		if (!user) return res.status(404).json({ error: "User not found" });
+		if (!user) return res.status(404).json({ error: "Kullanıcı bulunamadı" });
 
 		const likedPosts = await Post.find({ _id: { $in: user.likedPosts } })
 			.populate({
@@ -173,7 +173,7 @@ export const getLikedPosts = async (req, res) => {
 		res.status(200).json(likedPosts);
 	} catch (error) {
 		console.log("Error in getLikedPosts controller: ", error);
-		res.status(500).json({ error: "Internal server error" });
+		res.status(500).json({ error: "Sunucu hatası" });
 	}
 };
 
@@ -181,7 +181,7 @@ export const getFollowingPosts = async (req, res) => {
 	try {
 		const userId = req.user._id;
 		const user = await User.findById(userId);
-		if (!user) return res.status(404).json({ error: "User not found" });
+		if (!user) return res.status(404).json({ error: "Kullanıcı bulunamadı" });
 
 		const following = user.following;
 
@@ -199,7 +199,7 @@ export const getFollowingPosts = async (req, res) => {
 		res.status(200).json(feedPosts);
 	} catch (error) {
 		console.log("Error in getFollowingPosts controller: ", error);
-		res.status(500).json({ error: "Internal server error" });
+		res.status(500).json({ error: "Sunucu hatası" });
 	}
 };
 
@@ -208,7 +208,7 @@ export const getUserPosts = async (req, res) => {
 		const { username } = req.params;
 
 		const user = await User.findOne({ username });
-		if (!user) return res.status(404).json({ error: "User not found" });
+		if (!user) return res.status(404).json({ error: "Kullanıcı bulunamadı" });
 
 		const posts = await Post.find({ user: user._id })
 			.sort({ createdAt: -1 })
@@ -224,6 +224,6 @@ export const getUserPosts = async (req, res) => {
 		res.status(200).json(posts);
 	} catch (error) {
 		console.log("Error in getUserPosts controller: ", error);
-		res.status(500).json({ error: "Internal server error" });
+		res.status(500).json({ error: "Sunucu hatası" });
 	}
 };

@@ -1,7 +1,7 @@
 {
 	"name": "twitter-clone",
 	"version": "1.0.0",
-	"description": "",
+	"description": "Proje Birlik",
 	"main": "backend/server.js",
 	"scripts": {
 		"dev": "cross-env NODE_ENV=development nodemon backend/server.js",

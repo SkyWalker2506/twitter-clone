@@ -1,6 +1,8 @@
 export const formatPostDate = (createdAt) => {
+	if (!createdAt) return "";
 	const currentDate = new Date();
 	const createdAtDate = new Date(createdAt);
+	if (Number.isNaN(createdAtDate.getTime())) return "";
 
 	const timeDifferenceInSeconds = Math.floor((currentDate - createdAtDate) / 1000);
 	const timeDifferenceInMinutes = Math.floor(timeDifferenceInSeconds / 60);
@@ -8,35 +10,22 @@ export const formatPostDate = (createdAt) => {
 	const timeDifferenceInDays = Math.floor(timeDifferenceInHours / 24);
 
 	if (timeDifferenceInDays > 1) {
-		return createdAtDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+		return createdAtDate.toLocaleDateString("tr-TR", { month: "short", day: "numeric" });
 	} else if (timeDifferenceInDays === 1) {
-		return "1d";
+		return "1 gün";
 	} else if (timeDifferenceInHours >= 1) {
-		return `${timeDifferenceInHours}h`;
+		return `${timeDifferenceInHours} sa`;
 	} else if (timeDifferenceInMinutes >= 1) {
-		return `${timeDifferenceInMinutes}m`;
+		return `${timeDifferenceInMinutes} dk`;
 	} else {
-		return "Just now";
+		return "Az önce";
 	}
 };
 
 export const formatMemberSinceDate = (createdAt) => {
+	if (!createdAt) return "";
 	const date = new Date(createdAt);
-	const months = [
-		"January",
-		"February",
-		"March",
-		"April",
-		"May",
-		"June",
-		"July",
-		"August",
-		"September",
-		"October",
-		"November",
-		"December",
-	];
-	const month = months[date.getMonth()];
-	const year = date.getFullYear();
-	return `Joined ${month} ${year}`;
+	if (Number.isNaN(date.getTime())) return "";
+	const formatted = date.toLocaleDateString("tr-TR", { month: "long", year: "numeric" });
+	return `Katılım ${formatted}`;
 };

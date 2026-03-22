@@ -23,9 +23,8 @@ function App() {
 				const data = await res.json();
 				if (data.error) return null;
 				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
+					throw new Error(data.error || "Bir şeyler yanlış gitti");
 				}
-				console.log("authUser is here:", data);
 				return data;
 			} catch (error) {
 				throw new Error(error);
@@ -43,7 +42,7 @@ function App() {
 	}
 
 	return (
-		<div className='flex max-w-6xl mx-auto'>
+		<div className='flex w-full max-w-5xl mx-auto px-2 sm:px-4 lg:px-6'>
 			{/* Common component, bc it's not wrapped with Routes */}
 			{authUser && <Sidebar />}
 			<Routes>

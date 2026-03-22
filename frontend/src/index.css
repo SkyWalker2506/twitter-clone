@@ -1,3 +1,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Tema appGray (tailwind.config) ile aynı ana zemin — @apply bg-base-100 postcss’te hata verebiliyor */
+@layer base {
+	html {
+		min-height: 100%;
+	}
+	body {
+		min-height: 100vh;
+		background-color: #6d7484;
+		color: #f8fafc;
+		-webkit-font-smoothing: antialiased;
+	}
+}
+
+/* Web sitesi hissi: kompakt, tutarlı butonlar; mobilde yine responsive */
+@layer components {
+	.btn-web-primary {
+		@apply inline-flex min-h-[2.25rem] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-sky-400/40 bg-gradient-to-b from-sky-500 to-sky-600 px-4 py-1.5 text-sm font-semibold tracking-wide text-white shadow-md shadow-sky-900/40 ring-1 ring-white/15 transition hover:brightness-110 hover:shadow-lg active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 disabled:pointer-events-none disabled:opacity-75;
+	}
+
+	.btn-web-secondary {
+		@apply inline-flex min-h-[2.25rem] items-center justify-center gap-2 rounded-full border border-zinc-600/90 bg-zinc-800/60 px-3.5 py-1.5 text-sm font-medium text-zinc-200 shadow-sm transition hover:border-zinc-500 hover:bg-zinc-700/70 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+	}
+
+	.btn-web-icon {
+		@apply inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-600/90 bg-zinc-800/60 text-zinc-300 transition hover:bg-zinc-700/70 active:scale-[0.98] disabled:opacity-40;
+	}
+
+	/* Açık arka planda (ör. takip kartı) */
+	.btn-web-light {
+		@apply inline-flex min-h-[2.25rem] items-center justify-center gap-1.5 rounded-full border border-white/25 bg-white px-4 py-1.5 text-sm font-semibold text-zinc-900 shadow-sm transition hover:bg-zinc-100 active:scale-[0.98] disabled:opacity-60;
+	}
+
+	.btn-web-outline {
+		@apply inline-flex min-h-[2.25rem] items-center justify-center gap-2 rounded-full border border-zinc-600 bg-transparent px-4 py-1.5 text-sm font-medium text-zinc-200 transition hover:bg-zinc-800/80 active:scale-[0.98];
+	}
+}
