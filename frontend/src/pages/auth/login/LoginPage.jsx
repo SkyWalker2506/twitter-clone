@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import XSvg from "../../../components/svgs/X";
+import AppLogo from "../../../components/AppLogo";
 
 import { MdOutlineMail } from "react-icons/md";
 import { MdPassword } from "react-icons/md";
@@ -59,11 +59,11 @@ const LoginPage = () => {
 	return (
 		<div className='max-w-6xl mx-auto flex min-h-screen px-4'>
 			<div className='flex-1 hidden lg:flex items-center justify-center p-8'>
-				<XSvg className='lg:max-w-md w-full fill-white opacity-90' />
+				<AppLogo className='hidden lg:block lg:max-w-md w-full max-h-56 object-contain opacity-95' />
 			</div>
 			<div className='flex-1 flex flex-col justify-center items-center py-8 w-full max-w-md mx-auto'>
 				<form className='flex gap-3 flex-col w-full' onSubmit={handleSubmit}>
-					<XSvg className='w-16 lg:hidden fill-white mx-auto' />
+					<AppLogo className='h-14 w-auto max-w-[12rem] mx-auto lg:hidden object-contain' />
 					<h1 className='text-2xl sm:text-3xl font-bold text-white tracking-tight'>Hadi başlayalım.</h1>
 					<label className='flex h-10 items-center gap-2 rounded-lg border border-zinc-300 bg-white px-2 shadow-sm'>
 						<MdOutlineMail className='h-4 w-4 shrink-0 text-zinc-600' />

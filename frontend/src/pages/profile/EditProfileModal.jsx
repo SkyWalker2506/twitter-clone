@@ -175,17 +175,10 @@ const EditProfileModal = ({ authUser }) => {
 								</div>
 							</div>
 
-							<div className='flex w-full min-w-0 shrink-0 flex-col-reverse gap-2 border-t border-base-300 pt-4 sm:flex-row sm:items-center sm:justify-end sm:gap-3'>
-								<button
-									type='button'
-									className='btn-web-secondary w-full shrink-0 justify-center whitespace-nowrap sm:w-auto sm:min-w-[6.5rem]'
-									onClick={closeModal}
-								>
-									İptal
-								</button>
+							<div className='flex w-full min-w-0 shrink-0 justify-end border-t border-base-300 pt-4'>
 								<button
 									type='submit'
-									className='btn-web-primary w-full shrink-0 justify-center whitespace-nowrap sm:min-w-[8rem]'
+									className='btn-web-primary w-full shrink-0 justify-center whitespace-nowrap sm:w-auto sm:min-w-[8rem]'
 									disabled={isUpdatingProfile}
 								>
 									{isUpdatingProfile ? "Güncelleniyor..." : "Güncelle"}
