@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { IoCloseSharp, IoSend } from "react-icons/io5";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
+import { apiFetch } from "../../utils/apiFetch";
 
 const CreatePost = () => {
 	const [text, setText] = useState("");
@@ -21,7 +22,7 @@ const CreatePost = () => {
 	} = useMutation({
 		mutationFn: async ({ text, img }) => {
 			try {
-				const res = await fetch("/api/posts/create", {
+				const res = await apiFetch("/api/posts/create", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -34,7 +35,8 @@ const CreatePost = () => {
 				}
 				return data;
 			} catch (error) {
-				throw new Error(error);
+				if (error instanceof Error) throw error;
+				throw new Error(String(error));
 			}
 		},
 
@@ -80,14 +82,14 @@ const CreatePost = () => {
 					Gönderi metni
 				</label>
 				{/* z-index + arka plan: temada metin rengi ezilmesini ve üst üste binmeyi önler */}
-				<div className='relative z-20 w-full rounded-md border border-zinc-700/80 bg-zinc-900/70 p-1.5 shadow-sm'>
+				<div className='relative z-20 w-full rounded-md border border-zinc-500/45 bg-zinc-600/45 p-1.5 shadow-sm'>
 					<textarea
 						id='create-post-text'
 						name='createPostText'
 						rows={3}
 						autoComplete='off'
 						spellCheck={true}
-						className='block w-full min-h-[4.5rem] resize-y rounded border-0 bg-transparent px-2 py-1.5 text-sm leading-relaxed text-zinc-100 caret-sky-400 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-sky-500/30'
+						className='block w-full min-h-[4.5rem] resize-y rounded border-0 bg-transparent px-2 py-1.5 text-sm leading-relaxed text-zinc-100 caret-sky-400 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-sky-400/35'
 						placeholder='Neler oluyor?'
 						value={text}
 						onChange={(e) => setText(e.target.value)}

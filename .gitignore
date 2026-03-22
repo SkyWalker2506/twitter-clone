@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .env
+
+# Yerel görsel yüklemeleri (Cloudinary yokken)
+uploads/

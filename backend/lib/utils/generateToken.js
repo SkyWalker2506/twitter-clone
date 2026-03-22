@@ -1,14 +1,20 @@
 import jwt from "jsonwebtoken";
 
+const isDev = process.env.NODE_ENV === "development";
+
 export const generateTokenAndSetCookie = (userId, res) => {
+	const expiresIn = isDev ? "30d" : "24h";
+	const maxAgeMs = isDev ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+
 	const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
-		expiresIn: "24h",
+		expiresIn,
 	});
 
 	res.cookie("jwt", token, {
-		maxAge: 24 * 60 * 60 * 1000, // 24 saat (ms)
-		httpOnly: true, // prevent XSS attacks cross-site scripting attacks
-		sameSite: "strict", // CSRF attacks cross-site request forgery attacks
+		maxAge: maxAgeMs,
+		httpOnly: true,
+		sameSite: "strict",
 		secure: process.env.NODE_ENV !== "development",
+		path: "/",
 	});
 };

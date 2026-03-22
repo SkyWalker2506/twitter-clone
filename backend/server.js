@@ -23,11 +23,13 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
 
-app.use(express.json({ limit: "5mb" })); // to parse req.body
-// limit shouldn't be too high to prevent DOS
-app.use(express.urlencoded({ extended: true })); // to parse form data(urlencoded)
+// Base64 görsel istekleri şişirir; 5mb sınırı sıkça 413 / kesik JSON hatasına yol açar
+app.use(express.json({ limit: "25mb" }));
+app.use(express.urlencoded({ extended: true, limit: "25mb" }));
 
 app.use(cookieParser());
+
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -41,6 +43,16 @@ if (process.env.NODE_ENV === "production") {
 		res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
 	});
 }
+
+app.use((err, req, res, next) => {
+	if (err?.type === "entity.too.large" || err?.status === 413) {
+		return res.status(413).json({
+			error: "İstek çok büyük. Daha küçük bir görsel seçin veya çözünürlüğü düşürün.",
+		});
+	}
+	console.error("İşlenmeyen hata:", err);
+	return res.status(500).json({ error: "Sunucu hatası" });
+});
 
 app.listen(PORT, () => {
 	console.log(`Sunucu çalışıyor, port: ${PORT}`);

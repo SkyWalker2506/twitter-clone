@@ -1,7 +1,16 @@
+import fs from "fs/promises";
+
 import Notification from "../models/notification.model.js";
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import { v2 as cloudinary } from "cloudinary";
+import { CLOUDINARY_CONFIG_ERROR_TR, isCloudinaryConfigured } from "../lib/isCloudinaryConfigured.js";
+import {
+	localFilePathFromUploadUrl,
+	isLocalUploadUrl,
+	saveDataUrlToUploads,
+	useLocalImageUploads,
+} from "../lib/saveDataUrlToUploads.js";
 
 export const createPost = async (req, res) => {
 	try {
@@ -17,8 +26,26 @@ export const createPost = async (req, res) => {
 		}
 
 		if (img) {
-			const uploadedResponse = await cloudinary.uploader.upload(img);
-			img = uploadedResponse.secure_url;
+			if (isCloudinaryConfigured()) {
+				try {
+					const uploadedResponse = await cloudinary.uploader.upload(img, {
+						folder: "posts",
+						resource_type: "image",
+					});
+					img = uploadedResponse.secure_url;
+				} catch (cloudErr) {
+					console.error("Cloudinary gönderi görseli:", cloudErr);
+					if (useLocalImageUploads()) {
+						img = await saveDataUrlToUploads(img, "posts");
+					} else {
+						throw cloudErr;
+					}
+				}
+			} else if (useLocalImageUploads()) {
+				img = await saveDataUrlToUploads(img, "posts");
+			} else {
+				return res.status(503).json({ error: CLOUDINARY_CONFIG_ERROR_TR });
+			}
 		}
 
 		const newPost = new Post({
@@ -30,8 +57,25 @@ export const createPost = async (req, res) => {
 		await newPost.save();
 		res.status(201).json(newPost);
 	} catch (error) {
+		console.error("Error in createPost controller:", error);
+		const localMsg = error?.message;
+		if (typeof localMsg === "string" && (localMsg.includes("Geçersiz") || localMsg.includes("çok büyük") || localMsg.includes("Boş görsel"))) {
+			return res.status(400).json({ error: localMsg });
+		}
+		const apiMsg = error?.error?.message || error?.message || "";
+		if (typeof apiMsg === "string") {
+			if (/invalid api|api_key|api secret|authentication/i.test(apiMsg)) {
+				return res.status(503).json({
+					error: "Cloudinary kimlik bilgileri geçersiz veya eksik. .env içindeki anahtarları kontrol edin.",
+				});
+			}
+		}
+		if (error?.http_code === 401) {
+			return res.status(503).json({
+				error: "Cloudinary kimlik doğrulaması başarısız; API anahtarlarını kontrol edin.",
+			});
+		}
 		res.status(500).json({ error: "Sunucu hatası" });
-		console.log("Error in createPost controller: ", error);
 	}
 };
 
@@ -47,8 +91,13 @@ export const deletePost = async (req, res) => {
 		}
 
 		if (post.img) {
-			const imgId = post.img.split("/").pop().split(".")[0];
-			await cloudinary.uploader.destroy(imgId);
+			if (isLocalUploadUrl(post.img)) {
+				const fp = localFilePathFromUploadUrl(post.img);
+				if (fp) await fs.unlink(fp).catch(() => {});
+			} else if (isCloudinaryConfigured()) {
+				const imgId = post.img.split("/").pop()?.split(".")[0];
+				if (imgId) await cloudinary.uploader.destroy(imgId).catch(() => {});
+			}
 		}
 
 		await Post.findByIdAndDelete(req.params.id);

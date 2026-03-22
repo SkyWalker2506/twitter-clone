@@ -1,0 +1,21 @@
+---
+description: Kullanıcı değişikliklerini koru; güncellemede silme
+alwaysApply: true
+---
+
+# Kullanıcı değişikliklerini koruma
+
+Bu projede yapılan **elle özelleştirmeler** (metinler, stiller, env, yorumlar, ek prop’lar, yerel ayarlar) **silinmemelidir**.
+
+## Zorunlu davranış
+
+1. **Dosyayı düzenlemeden önce** ilgili dosyanın güncel içeriğini oku; eski varsayılanı varsayma.
+2. **Tam dosya yeniden yazma** (whole-file overwrite) yapma; yalnızca istenen değişiklik için **hedefli patch** kullan (search/replace veya küçük diff).
+3. Kullanıcının eklediği blokları, yorumları, çeviri metinlerini, `className` / tema / kopya metinlerini **koru**; sadece açıkça talep edilen satırları değiştir.
+4. Aynı dosyada **alakasız bölümlere dokunma** (“drive-by” refactor yok).
+5. `.env` ve kullanıcıya özel yerel dosyaları **silme veya sıfırlama**; örnek içerik yalnızca `.env-sample` vb. üzerinden güncellenir.
+6. `uploads/` ve kullanıcı verisi klasörleri kod güncellemesiyle **temizlenmez**.
+
+## Çakışma
+
+İstenen değişiklik, mevcut kullanıcı koduyla çakışıyorsa: önce kısa bir notla çakışmayı belirt; mümkünse **her iki tarafı da koruyacak** birleştirme öner.

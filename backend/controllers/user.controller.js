@@ -1,6 +1,8 @@
 import bcrypt from "bcryptjs";
 import { v2 as cloudinary } from "cloudinary";
 
+import { CLOUDINARY_CONFIG_ERROR_TR, isCloudinaryConfigured } from "../lib/isCloudinaryConfigured.js";
+
 // models
 import Notification from "../models/notification.model.js";
 import User from "../models/user.model.js";
@@ -111,6 +113,10 @@ export const updateUser = async (req, res) => {
 
 			const salt = await bcrypt.genSalt(10);
 			user.password = await bcrypt.hash(newPassword, salt);
+		}
+
+		if ((profileImg || coverImg) && !isCloudinaryConfigured()) {
+			return res.status(503).json({ error: CLOUDINARY_CONFIG_ERROR_TR });
 		}
 
 		if (profileImg) {
